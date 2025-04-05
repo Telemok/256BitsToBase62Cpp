@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+/256BitsToBase62
+/.vs/256BitsToBase62
+/x64
