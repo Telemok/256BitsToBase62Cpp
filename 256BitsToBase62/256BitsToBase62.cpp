@@ -165,9 +165,9 @@ int main() {
 			}
 			cout << dec << endl;
 
-			cout << "Serialised 43 bytes [0-9A-Za-z]:\n";
+			cout << "Serialised ([0-9A-Za-z]){43}:\n";
 			for (int i = 0; i < 43; i++) {
-				cout << (int)serialized[i] << " ";
+				cout << serialized[i];
 			}
 			cout << endl;
 
