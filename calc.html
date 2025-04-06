@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Divider Graph</title>
+</head>
+<body>
+    <canvas id="myCanvas" width="620" height="400"></canvas>
+    <script>
+        // Основные переменные
+        const myDivider = 62;
+        const counter = new Array(myDivider).fill(0);
+        
+        // Функция для генерации случайного 64-битного числа
+        function getRandom64bit() {
+		return BigInt(Math.floor(Math.random()*0xFFFFFFFF));
+            return BigInt(Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)) * 
+                   BigInt(Math.floor(Math.random() * Number.MAX_SAFE_INTEGER));
+        }
+
+        // Основной цикл
+        for (let i = 0; i < 1000000; i++) {
+            let num = getRandom64bit();
+            
+            // Внутренний цикл 10 итераций
+            for (let j = 0; j < 5; j++) {
+                //let remainder = Number(num % BigInt(myDivider));
+                let remainder = Number(num % BigInt(myDivider));
+                counter[remainder]++;
+                num = num / BigInt(myDivider);
+            }
+        }
+
+        // Отрисовка графика
+        const canvas = document.getElementById('myCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Находим максимальное значение для масштабирования
+        const maxCount = Math.max(...counter);
+        
+        // Рисуем столбцы
+        const barWidth = canvas.width / myDivider;
+        for (let i = 0; i < myDivider; i++) {
+            const barHeight = (counter[i] / maxCount) * canvas.height;
+            ctx.fillRect(
+                i * barWidth,           // x координата
+                canvas.height - barHeight, // y координата (от низа)
+                barWidth - 1,           // ширина столбца (-1 для промежутка)
+                barHeight              // высота столбца
+            );
+        }
+    </script>
+</body>
+</html>

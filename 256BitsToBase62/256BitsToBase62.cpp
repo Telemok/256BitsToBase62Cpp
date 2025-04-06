@@ -25,12 +25,19 @@
  @endverbatim
  */
 
-
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <windows.h> // Для ShellExecute
 #include <iostream>
 #include <cstdint>
 #include <cstring>
 #include <conio.h>
 using namespace std;
+
+#define FLAG_CALC_HASH_SYMBOL_SPREADING
+long hashSymbolSpreadCounter[62];
+
 
 /* Fast way to serialise any 256 bits to 43 bytes of [0-9A-Za-z] and return back. */
 struct alignas(32) Data256 {
@@ -56,6 +63,9 @@ struct alignas(32) Data256 {
 	/** Convert 0-61 uint8 to [0-9A-Za-z]
 	* No argument validation. */
 	static char uint8_to_base62(uint8_t n) {
+#ifdef FLAG_CALC_HASH_SYMBOL_SPREADING
+		hashSymbolSpreadCounter[n]++;
+#endif
 		return n + (n < 10 ? '0' : n < 36 ? -10 + 'A' : -36 + 'a');
 	}
 
@@ -138,6 +148,9 @@ struct alignas(32) Data256 {
 int main() {
 
 	for (int i = 0; i < 62; i++)
+		hashSymbolSpreadCounter[i] = 0;
+
+	for (int i = 0; i < 62; i++)
 	{
 		char c = Data256::uint8_to_base62(i);
 		uint8_t d = Data256::base62_to_uint8(c);
@@ -183,7 +196,63 @@ int main() {
 			int a = _getch();
 		}
 	}
+
+
+
+	for (int i = 0; i < 62; i++)
+		cout << hashSymbolSpreadCounter[i] << endl;
+
+
 	cout << "If no error messages, program end OK: " << endl;
+
+
+	std::string arrayStr;
+	for (int i = 0; i < 62; i++) {
+		arrayStr += std::to_string(hashSymbolSpreadCounter[i]);
+		if (i < 61) arrayStr += ", ";
+	}
+	// HTML код как строка
+	std::string htmlTemplate = R"(
+<!DOCTYPE html>
+<html>
+<body>
+<canvas id="myCanvas" width="620" height="400"></canvas>
+<script>
+var data=[];
+const canvas = document.getElementById('myCanvas');
+const ctx = canvas.getContext('2d');
+const maxCount = Math.max(...data);
+const barWidth = canvas.width / data.length;
+for (let i = 0; i < data.length; i++) {
+const barHeight = (data[i] / maxCount) * canvas.height;
+ctx.fillRect(
+i * barWidth,
+canvas.height - barHeight,
+barWidth - 1,
+barHeight
+);}
+</script>
+</body>
+</html>
+)";
+
+	std::string result = htmlTemplate.substr(0, 107) + arrayStr + htmlTemplate.substr(107);
+
+	// Сохраняем в файл
+	std::ofstream outFile("result.html");
+	if (!outFile) {
+		std::cout << "Cannot create result.html" << std::endl;
+		return 1;
+	}
+
+	outFile << result;
+	outFile.close();
+
+	std::cout << "File successfully created" << std::endl;
+
+	// Открываем файл в браузере по умолчанию
+	ShellExecuteA(NULL, "open", "result.html", NULL, NULL, SW_SHOWNORMAL);
+
 
 	return 0;
 }

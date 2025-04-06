@@ -1,0 +1,22 @@
+
+<!DOCTYPE html>
+<html>
+<body>
+<canvas id="myCanvas" width="620" height="400"></canvas>
+<script>
+var data=[745151, 700610, 697542, 743182, 689482, 711145, 737906, 675727, 727959, 715853, 679832, 740385, 708395, 688118, 744877, 687268, 702503, 739891, 680079, 721869, 730507, 679361, 735604, 704714, 684008, 738924, 695523, 702024, 744320, 678121, 675456, 669958, 674436, 675482, 681025, 676497, 680869, 675468, 675872, 674815, 676167, 677382, 681425, 677854, 681695, 672888, 675321, 673758, 678331, 677453, 680417, 678199, 679344, 676453, 679825, 675710, 680168, 675455, 680769, 678644, 679801, 672245];
+const canvas = document.getElementById('myCanvas');
+const ctx = canvas.getContext('2d');
+const maxCount = Math.max(...data);
+const barWidth = canvas.width / data.length;
+for (let i = 0; i < data.length; i++) {
+const barHeight = (data[i] / maxCount) * canvas.height;
+ctx.fillRect(
+i * barWidth,
+canvas.height - barHeight,
+barWidth - 1,
+barHeight
+);}
+</script>
+</body>
+</html>
